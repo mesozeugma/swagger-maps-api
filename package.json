@@ -1,0 +1,32 @@
+{
+  "name": "maps",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "sqlite3": "^4.1.0",
+    "swagger-express-mw": "^0.1.0",
+    "typeorm": "^0.2.20"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write \"api/**/*.js\"",
+    "start": "node app.js",
+    "test": "swagger project test",
+    "test:swagger": "swagger validate api/swagger/swagger.yaml",
+    "migration:run": "./node_modules/typeorm/cli.js migration:run"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
+}

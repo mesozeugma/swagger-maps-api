@@ -1,0 +1,88 @@
+version: "3.5"
+
+x-service-api: &service-api
+  build: "."
+  image: mesozeugma/swagger-maps-api:1.0.0
+  restart: unless-stopped
+  volumes:
+    - api-data:/data
+
+x-environment-kong-database: &environment-kong-database
+  KONG_DATABASE: postgres
+  KONG_PG_HOST: kong-database
+  KONG_PG_PASSWORD: kong
+
+services:
+  kong-database:
+    image: postgres:9.5-alpine
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 15s
+      timeout: 5s
+    restart: unless-stopped
+
+  kong-configuration:
+    image: postman/newman:4.5.6-alpine
+    entrypoint: /bin/sh -c "sleep 15; newman run kong.postman_collection.json --bail --environment=docker.postman_environment.json"
+    volumes:
+      - ./deploy/kong-configuration:/etc/newman
+
+  kong-migration:
+    image: kong:1.4
+    command: [kong, migrations, bootstrap]
+    depends_on:
+      - kong-database
+    environment:
+      <<: *environment-kong-database
+    restart: on-failure
+
+  kong:
+    image: kong:1.4
+    depends_on:
+      - kong-migration
+      - kong-database
+    environment:
+      <<: *environment-kong-database
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001"]
+      interval: 15s
+      timeout: 5s
+    ports:
+      - 8000:8000
+      - 8001:8001
+    restart: unless-stopped
+
+  api:
+    <<: *service-api
+
+  api2:
+    <<: *service-api
+
+  api-migration:
+    <<: *service-api
+    entrypoint: [npm, run, "migration:run"]
+    restart: "no"
+
+  # api-database:
+  #   image: postgres:9.5-alpine
+  #   environment:
+  #     POSTGRES_DB: api
+  #     POSTGRES_USER: api
+  #     POSTGRES_PASSWORD: api
+  #   healthcheck:
+  #     test: ["CMD", "pg_isready", "-U", "api"]
+  #     interval: 15s
+  #     timeout: 5s
+  #   restart: unless-stopped
+
+volumes:
+  api-data:

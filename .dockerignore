@@ -1,0 +1,5 @@
+*.sqlite
+deploy
+docker-compose.yml
+node_modules
+test

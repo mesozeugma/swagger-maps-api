@@ -1,0 +1,585 @@
+{
+	"info": {
+		"_postman_id": "a6354dfa-9f7f-4e5e-9dc0-eafa70072bd3",
+		"name": "kong",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create upstream maps_api",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa0f9c2a-0c0c-4629-95ed-089d919cd719",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"maps_api\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/upstreams",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"upstreams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create upstream target",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d703c0f5-7e54-4e92-a113-2b29098b8418",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"target\": \"{{API_HOST}}:{{API_PORT}}\",\n    \"weight\": 100\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/upstreams/maps_api/targets",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"upstreams",
+						"maps_api",
+						"targets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create upstream target 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b345ea19-c64a-4371-b752-e99080c9e2fe",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"target\": \"{{API_HOST}}2:{{API_PORT}}\",\n    \"weight\": 50\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/upstreams/maps_api/targets",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"upstreams",
+						"maps_api",
+						"targets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create service maps_api",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a5e25bda-3598-45e7-891a-82a777c9de09",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"host\": \"maps_api\",\n    \"name\": \"maps_api\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/services",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"services"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create route",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8b432529-5c4b-44fa-846b-8a435b3dccba",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paths\": [ \"/\" ]\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/services/maps_api/routes",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"services",
+						"maps_api",
+						"routes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create plugin key-auth X-Client-Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0056e397-5d36-46b9-b6d2-db3d845fe19a",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"key-auth\",\n    \"config\": {\n    \t\"key_names\": [\"X-Client-Key\"]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/services/maps_api/plugins",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"services",
+						"maps_api",
+						"plugins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create global plugin rate-limiting",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1a9767ca-51d3-49df-9ec9-ae068a001418",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"rate-limiting\",\n    \"config\": {\n    \t\"minute\": 1000\n    }\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/plugins",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"plugins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create consumer web",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "06138418-06bc-4c82-8f0e-d25e5087da82",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"web\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create consumer mobile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5365362b-5f12-45c1-b3e9-c39eb8ed1918",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"mobile\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create key for web consumer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ff7868f1-320b-4620-abf4-53d3b9e9b3f0",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"key\": \"web\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers/web/key-auth",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers",
+						"web",
+						"key-auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create key for mobile consumer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e5bc1866-7256-4392-aebd-fb15c533bec3",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"key\": \"mobile\"\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers/mobile/key-auth",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers",
+						"mobile",
+						"key-auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create plugin rate-limitng for web consumer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0663da9-924e-421a-a2d8-2f6c3f8fcdf9",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"rate-limiting\",\n    \"config\": {\n    \t\"minute\": 1000\n    }\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers/web/plugins",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers",
+						"web",
+						"plugins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create plugin rate-limitng for mobile consumer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8170087c-9450-4e8e-aba3-07b5106a0d22",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"rate-limiting\",\n    \"config\": {\n    \t\"minute\": 600\n    }\n}"
+				},
+				"url": {
+					"raw": "{{KONG_HOST}}:8001/consumers/mobile/plugins",
+					"host": [
+						"{{KONG_HOST}}"
+					],
+					"port": "8001",
+					"path": [
+						"consumers",
+						"mobile",
+						"plugins"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

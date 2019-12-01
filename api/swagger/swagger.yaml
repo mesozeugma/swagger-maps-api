@@ -1,0 +1,276 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Maps App
+host: localhost:10010
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: user
+    description: Actions related to users
+  - name: location
+    description: Actions related to locations
+  - name: trip
+    description: Actions related to trips
+paths:
+  /auth/login:
+    x-swagger-router-controller: auth
+    post:
+      description: Create user session
+      operationId: login
+      security: []
+      tags:
+        - user
+      parameters:
+        - name: credentials
+          in: body
+          description: User credentials
+          required: true
+          schema:
+            $ref: '#/definitions/UserDTO'
+      responses:
+        201:
+          description: User session created successfully
+          schema:
+            required:
+              - apiKey
+            properties:
+              apiKey:
+                type: string
+        401:
+          $ref: '#/responses/Unauthorized'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /auth/logout:
+    x-swagger-router-controller: auth
+    post:
+      description: Delete user session
+      operationId: logout
+      tags:
+        - user
+      responses:
+        204:
+          description: User session deleted successfully
+        500:
+          $ref: '#/responses/InternalServerError'
+  /users:
+    x-swagger-router-controller: users
+    post:
+      description: Create new user
+      operationId: createUser
+      security: []
+      tags:
+        - user
+      parameters:
+        - name: credentials
+          in: body
+          description: User credentials
+          required: true
+          schema:
+            $ref: '#/definitions/UserDTO'
+      responses:
+        201:
+          description: User created successfully
+        500:
+          $ref: '#/responses/InternalServerError'
+  /locations:
+    x-swagger-router-controller: locations
+    put:
+      description: Update location
+      operationId: updateLocation
+      tags:
+        - location
+      parameters:
+        - name: location
+          in: body
+          description: Current location
+          required: true
+          schema:
+            $ref: '#/definitions/Location'
+      responses:
+        204:
+          description: Location updated successfully
+        400:
+          $ref: '#/responses/LocationBadRequest'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /trips:
+    x-swagger-router-controller: trips
+    get:
+      description: List of your trips
+      operationId: listTrips
+      tags:
+        - trip
+      responses:
+        200:
+          description: List of your trips
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trip'
+        500:
+          $ref: '#/responses/InternalServerError'
+    post:
+      description: Create new trip
+      operationId: createTrip
+      tags:
+        - trip
+      parameters:
+        - name: trip
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TripDTO'
+      responses:
+        201:
+          description: Informations about trip
+          schema:
+            $ref: '#/definitions/TripWithRoute'
+        400:
+          $ref: '#/responses/LocationBadRequest'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /trips/{tripId}:
+    x-swagger-router-controller: trips
+    get:
+      description: Show information about the trip
+      operationId: showTrip
+      tags:
+        - trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Informations about trip
+          schema:
+            $ref: '#/definitions/TripWithRoute'
+        404:
+          $ref: '#/responses/NotFound'
+        500:
+          $ref: '#/responses/InternalServerError'
+    delete:
+      description: Delete trip
+      operationId: destroyTrip
+      tags:
+        - trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: Trip deleted successfully
+        404:
+          $ref: '#/responses/NotFound'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /swagger:
+    x-swagger-pipe: swagger_raw
+responses:
+  InternalServerError:
+    description: Internal Server Error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  LocationBadRequest:
+    description: Bad Request (e.g. location not exists)
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  NotFound:
+    description: The specified resource was not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+definitions:
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  Location:
+    required:
+      - longitude
+      - latitude
+    properties:
+      longitude:
+        type: number
+      latitude:
+        type: number
+  TripDTO:
+    required:
+      - name
+      - to
+    properties:
+      name:
+        type: string
+      from:
+        type: string
+        default: Current session's location.
+      to:
+        type: string
+  TripWithRoute:
+    allOf:
+      - $ref: '#/definitions/Trip'
+      - required:
+          - route
+        properties:
+          route:
+            type: array
+            items:
+              $ref: '#/definitions/Waypoint'
+  Trip:
+    required:
+      - id
+      - name
+      - from
+      - to
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      from:
+        $ref: '#/definitions/Location'
+      to:
+        $ref: '#/definitions/Location'
+  UserDTO:
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  Waypoint:
+    required:
+      - distance
+      - name
+      - location
+    properties:
+      distance:
+        type: number
+      name:
+        type: string
+      location:
+        $ref: '#/definitions/Location'
